@@ -96,7 +96,17 @@ def deleteRow():
     global selected_rowid
     data.removeRecord(selected_rowid)
     refreshData()
+def restoreRecord():
+    global selected_rowid
+    deleted_record = data.fetchdeleteRow(selected_rowid)
 
+    if deleted_record:
+        item_name, item_price, purchase_date = deleted_record
+        data.restoreDeletedRecord(item_name, item_price, purchase_date)
+        refreshData()
+        messagebox.showinfo('Restored', 'Record Restored Successfully')
+    else:
+        messagebox.showwarning('Not Found', f"No record found for rowid {selected_rowid}")
 # create tkinter object
 ws = Tk()
 ws.title('112103147_EXPENSE_TRACKER')
@@ -214,6 +224,13 @@ del_btn = Button(
     font=f
 )
 
+restore_btn = Button(
+    f1,
+    text='Restore',
+    bg='grey69',
+    command=restoreRecord,
+    font=f
+)
 # grid placement
 cur_date.grid(row=3, column=1, sticky=EW, padx=(10, 0))
 submit_btn.grid(row=0, column=2, sticky=EW, padx=(10, 0))
@@ -222,7 +239,7 @@ quit_btn.grid(row=2, column=2, sticky=EW, padx=(10, 0))
 total_bal.grid(row=0, column=3, sticky=EW, padx=(10, 0))
 update_btn.grid(row=1, column=3, sticky=EW, padx=(10, 0))
 del_btn.grid(row=2, column=3, sticky=EW, padx=(10, 0))
-
+restore_btn.grid(row=3, column=3, sticky=EW, padx=(10, 0))
 # Treeview widget
 tv = ttk.Treeview(f2, columns=(1, 2, 3, 4), show='headings', height=8)
 tv.pack(side="left")
