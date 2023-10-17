@@ -4,6 +4,7 @@ from tkinter import ttk
 import datetime as dt
 from rp_database import Database
 from tkinter import messagebox
+from tkinter import simpledialog
 
 # object for database
 data = Database(db='112103147_project_database.db')
@@ -70,11 +71,21 @@ def update_record():
     tv.after(400, refreshData)
     
 
+def setTotalAmount():
+    global total_amount
+    total_amount = simpledialog.askinteger("Set Total Amount", "Enter your total amount:")
+
 def totalBalance():
-    f = data.fetchRecord(query="Select sum(item_price) from expense_record")
+    global total_amount
+    if not total_amount:
+        messagebox.showinfo('Total Balance', 'Please set your total amount first.')
+        return
+    
+    f = data.fetchRecord(query="SELECT SUM(item_price) FROM expense_record")
     for i in f:
         for j in i:
-            messagebox.showinfo('Current Balance: ', f"Total Expense: ' {j} \nBalance Remaining: {5500 - j}")
+            balance = total_amount - j
+            messagebox.showinfo('Total Balance', f"Total Expense: {j}\nRemaining Balance: {balance}")
 
 def refreshData():
     for item in tv.get_children():
@@ -183,6 +194,17 @@ update_btn = Button(
     command=update_record,
     font=f
 )
+
+#Changes made for setting total amount
+# Create a button to set total amount
+set_total_amount_btn = Button(
+    f1,
+    text='Set Total Amount',
+    font=f,
+    command=setTotalAmount,
+    bg='grey50'
+)
+set_total_amount_btn.grid(row=3, column=3, sticky=EW, padx=(10, 0))
 
 del_btn = Button(
     f1, 
